@@ -8,6 +8,12 @@ class Wallet(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if self.balance < 0:
+            raise ValidationError("Wallet balance cannot be negative.")
+        
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.label
