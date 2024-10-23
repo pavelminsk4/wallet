@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class Wallet(models.Model):
@@ -7,6 +8,9 @@ class Wallet(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.label
 
 
 class Transaction(models.Model):
@@ -17,3 +21,11 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        wallet = self.wallet
+        wallet.balance += self.amount
+        wallet.save()
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return self.tx_id
